@@ -3,12 +3,7 @@ from vnstock import Market, Fundamental
 
 @dlt.source(name="vnstock_source")
 def stock_source(symbols: list[str], start_date: str, end_date: str):
-    """
-    dlt Source kết hợp tốt nhất: Dùng vnstock V3 hướng đối tượng
-    và trả về resource generator chuẩn hóa cho dlt.
-    """
     mkt = Market()
-    fundamentals = Fundamental()
 
     # write_disposition có thể chọn append để giữ lại dữ liệu cũ hoặc replace để thay thế dữ liệu cũ
     @dlt.resource(name="stock_history", write_disposition="append") 
