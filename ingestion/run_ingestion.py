@@ -1,6 +1,5 @@
-# run_ingestion.py
 import dlt
-from vnstock_sr import stock_source
+from data_pipeline_stock.ingestion.vnstock_src import stock_source
 
 def run_pipeline(symbols: list[str], start_date: str, end_date: str):
     
