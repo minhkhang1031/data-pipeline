@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: int_stock_calculate
+    description: "Tính toán các chỉ số kỹ thuật cơ bản"
+    columns:
+      - name: dlt_record_id
+        description: "Khóa chính duy nhất đại diện cho từng bản ghi."
+        tests:
+          - unique
+          - not_null
+
+      - name: stock_symbol
+        description: "Mã chứng khoán."
+        tests:
+          - not_null
+
+      - name: trading_date
+        description: "Ngày giao dịch."
+        tests:
+          - not_null
+
+      - name: rsi_14
+        description: "Chỉ số Sức mạnh Tương đối (RSI)."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0 and rsi_14 <= 100"
+
+      - name: price_range_ratio
+        description: "Tỉ lệ biên độ dao động giá trong ngày."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"

@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: mart_market_trend
+    description: "Đưa ra label và dataset hoàn chỉnh cho model"
+    columns:
+      - name: dlt_record_id
+        description: "Khóa chính duy nhất."
+        tests:
+          - unique
+          - not_null
+
+      - name: trading_volume
+        description: "Khối lượng giao dịch gốc."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: feature_rsi_14
+        description: "Feature RSI đã được bo tròn và làm sạch."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0 and feature_rsi_14 <= 100"
+
+      - name: feature_sma_50
+        description: "Feature SMA50."
+        tests:
+          - not_null
+
+      - name: target_next_day_up
+        description: "Target Y: Nhãn dự đoán xu hướng ngày mai."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:          # Thêm dòng này để bọc các giá trị lại theo chuẩn dBT mới
+                values: [0, 1]
+
+      - name: target_7d_up
+        description: "Target Y: Nhãn dự đoán xu hướng 1 tuần sau."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:          # Thêm dòng này để bọc các giá trị lại theo chuẩn dBT mới
+                values: [0, 1]
+

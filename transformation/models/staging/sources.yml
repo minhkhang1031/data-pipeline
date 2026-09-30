@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: data_raw
+    description: "Nguồn dữ liệu thô trên LocalStack S3"
+    tables:
+      - name: stock_raw
+        description: "Dữ liệu giá cổ phiếu thô từ nguồn dữ liệu bên ngoài."
+        meta: 
+          external_location: "s3://raw-data/**/*.parquet"

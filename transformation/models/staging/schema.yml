@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_stock_raw
+    description: "Làm sạch data raw"
+    columns:
+      - name: dlt_record_id
+        description: "Khóa chính duy nhất cho mỗi bản ghi do dlt sinh ra"
+        tests:
+          - unique
+          - not_null
+
+      - name: stock_symbol
+        description: "Mã cổ phiếu - Không được phép null"
+        tests:
+          - not_null
+
+      - name: trading_date
+        description: "Ngày giao dịch"
+        tests:
+          - not_null
+
+      - name: price_open
+        description: "Giá mở cửa"
+        tests:
+          - not_null
+
+      - name: price_close
+        description: "Giá đóng cửa"
+        tests:
+          - not_null
+
+      - name: price_high
+        description: "Giá cao nhất trong ngày"
+        tests:
+          - not_null
+
+      - name: price_low
+        description: "Giá thấp nhất trong ngày"
+        tests:
+          - not_null
+
+      - name: trading_volume
+        description: "Khối lượng giao dịch"
+        tests:
+          - not_null  

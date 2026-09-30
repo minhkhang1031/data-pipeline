@@ -1,0 +1,18 @@
+name: stock_pipeline
+version: '1.0.0'
+config-version: 2
+
+profile: stock_pipeline
+
+model-paths: ["models"]
+#macro-paths: ["macros"]
+test-paths: ["tests"]
+
+models:
+  stock_pipeline:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
