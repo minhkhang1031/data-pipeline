@@ -2,16 +2,16 @@ version: 2
 
 models:
   - name: int_stock_calculate
-    description: "Tính toán các chỉ số kỹ thuật cơ bản"
+    description: "Bảng tính toán các chỉ báo kỹ thuật gốc (SMA, RSI, MACD) từ dữ liệu Staging."
     columns:
       - name: dlt_record_id
-        description: "Khóa chính duy nhất đại diện cho từng bản ghi."
+        description: "Khóa chính duy nhất đại diện cho bản ghi log."
         tests:
           - unique
           - not_null
 
       - name: stock_symbol
-        description: "Mã chứng khoán."
+        description: "Mã chứng khoán (Ví dụ: FPT, HPG)."
         tests:
           - not_null
 
@@ -21,15 +21,24 @@ models:
           - not_null
 
       - name: rsi_14
-        description: "Chỉ số Sức mạnh Tương đối (RSI)."
+        description: "Chỉ số Sức mạnh Tương đối (RSI) chu kỳ 14 phiên."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0 and rsi_14 <= 100"
 
       - name: price_range_ratio
-        description: "Tỉ lệ biên độ dao động giá trong ngày."
+        description: "Tỉ lệ biên độ dao động giá cao/thấp trong ngày."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0"
+
+      - name: macd_line
+        description: "Đường MACD (EMA_12 - EMA_26)."
+
+      - name: macd_signal
+        description: "Đường Tín hiệu MACD Signal (EMA_9 của MACD Line)."
+
+      - name: macd_histogram
+        description: "Biểu đồ phân kỳ MACD Histogram (MACD Line - MACD Signal)."

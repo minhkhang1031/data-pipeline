@@ -2,9 +2,40 @@ version: 2
 
 sources:
   - name: data_raw
-    description: "Nguồn dữ liệu thô trên LocalStack S3"
+    description: "Raw stock data trên LocalStack S3"
+
     tables:
       - name: stock_raw
-        description: "Dữ liệu giá cổ phiếu thô từ nguồn dữ liệu bên ngoài."
-        meta: 
+        description: "Raw OHLCV data từ vnstock"
+
+        meta:
           external_location: "s3://raw-data/**/*.parquet"
+
+        columns:
+          - name: symbol
+            tests:
+              - not_null
+
+          - name: time
+            tests:
+              - not_null
+
+          - name: open
+            tests:
+              - not_null
+
+          - name: high
+            tests:
+              - not_null
+
+          - name: low
+            tests:
+              - not_null
+
+          - name: close
+            tests:
+              - not_null
+
+          - name: volume
+            tests:
+              - not_null

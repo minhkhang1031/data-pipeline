@@ -2,47 +2,87 @@ version: 2
 
 models:
   - name: mart_market_trend
-    description: "Đưa ra label và dataset hoàn chỉnh cho model"
+    description: "Dataset cuối cùng đã làm sạch, bo tròn đặc trưng (Features) và gán nhãn xu hướng (Labels) cho mô hình ML."
     columns:
       - name: dlt_record_id
-        description: "Khóa chính duy nhất."
+        description: "Khóa chính duy nhất kết thừa từ tầng dưới."
         tests:
           - unique
           - not_null
 
-      - name: trading_volume
-        description: "Khối lượng giao dịch gốc."
+      - name: stock_symbol
         tests:
+          - not_null
+
+      - name: trading_date
+        tests:
+          - not_null
+
+      - name: trading_volume
+        description: "Khối lượng giao dịch gốc (Đã lọc bỏ các ngày volume = 0)."
+        tests:
+          - not_null
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "> 0"
 
+      - name: feature_daily_return_pct
+        tests:
+          - not_null
+
+      - name: feature_intraday_volatility_pct
+        tests:
+          - not_null
+
+      - name: feature_distance_to_ma20_pct
+        tests:
+          - not_null
+
+      - name: feature_volume_shock_ratio
+        tests:
+          - not_null
+
       - name: feature_rsi_14
-        description: "Feature RSI đã được bo tròn và làm sạch."
         tests:
           - not_null
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0 and feature_rsi_14 <= 100"
 
+      - name: feature_sma_10
+        tests:
+          - not_null
+
+      - name: feature_sma_20
+        tests:
+          - not_null
+
       - name: feature_sma_50
-        description: "Feature SMA50."
+        tests:
+          - not_null
+
+      - name: feature_macd_line
+        tests:
+          - not_null
+
+      - name: feature_macd_signal
+        tests:
+          - not_null
+
+      - name: feature_macd_histogram
         tests:
           - not_null
 
       - name: target_next_day_up
-        description: "Target Y: Nhãn dự đoán xu hướng ngày mai."
+        description: "Nhãn dự đoán xu hướng ngày mai (1: Tăng, 0: Giảm/Đi ngang)."
         tests:
           - not_null
           - accepted_values:
-              arguments:          # Thêm dòng này để bọc các giá trị lại theo chuẩn dBT mới
-                values: [0, 1]
+              values: [0, 1]
 
       - name: target_7d_up
-        description: "Target Y: Nhãn dự đoán xu hướng 1 tuần sau."
+        description: "Nhãn dự đoán xu hướng 1 tuần sau (1: Tăng, 0: Giảm/Đi ngang)."
         tests:
           - not_null
           - accepted_values:
-              arguments:          # Thêm dòng này để bọc các giá trị lại theo chuẩn dBT mới
-                values: [0, 1]
-
+              values: [0, 1]

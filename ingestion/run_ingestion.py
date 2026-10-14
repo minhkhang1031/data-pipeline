@@ -1,34 +1,50 @@
-import dlt
-from data_pipeline_stock.ingestion.vnstock_src import stock_source
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
-def run_pipeline(symbols: list[str], start_date: str, end_date: str):
-    
-    # Khởi tạo pipeline lưu trữ dạng tập tin
+import dlt
+
+from vnstock_src import stock_source
+
+
+VN_TZ = ZoneInfo("Asia/Ho_Chi_Minh")
+
+SYMBOLS = [
+    "VCB",
+    "ACB",
+    "HPG",
+    "FPT",
+    "MWG",
+]
+
+
+def run_pipeline(
+    symbols: list[str],
+    start_date: str,
+    end_date: str,
+):
     pipeline = dlt.pipeline(
         pipeline_name="vnstock_pipeline",
-        destination="filesystem", 
-        dataset_name="raw-data"
-    )
-    
-    # Gọi Source
-    source = stock_source(
-        symbols=symbols, 
-        start_date=start_date, 
-        end_date=end_date
+        destination="filesystem",
+        dataset_name="raw-data",
     )
 
-    print("Extracting data from vnstock")
-    
-    load_info = pipeline.run(source, loader_file_format="parquet")
-    
-    print("\nDone!")
-    print(load_info)
+    source = stock_source(
+        symbols=symbols,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    return pipeline.run(
+        source,
+        loader_file_format="parquet",
+    )
+
 
 if __name__ == "__main__":
+    load_info = run_pipeline(
+        symbols=SYMBOLS,
+        start_date="2020-01-01",
+        end_date=datetime.now(VN_TZ).date().isoformat(),
+    )
 
-    symbols = ["VCB", "ACB", "HPG", "FPT", "MWG"]
-    start_date = "2023-01-01"
-    end_date = "2026-01-01"
-
-    run_pipeline(symbols, start_date, end_date)
-
+    print(load_info)

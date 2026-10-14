@@ -1,29 +1,60 @@
 import dlt
-from vnstock import Market, Fundamental
+from vnstock import Market
+
 
 @dlt.source(name="vnstock_source")
-def stock_source(symbols: list[str], start_date: str, end_date: str):
-    mkt = Market()
+def stock_source(
+    symbols: list[str],
+    start_date: str,
+    end_date: str,
+):
+    market = Market()
 
-    # write_disposition có thể chọn append để giữ lại dữ liệu cũ hoặc replace để thay thế dữ liệu cũ
-    @dlt.resource(name="stock_history", write_disposition="append") 
+    @dlt.resource(
+        name="stock_history",
+        primary_key=("symbol", "time"),
+        write_disposition="append",
+    )
     def stock_history_resource():
+        errors: list[str] = []
+
         for symbol in symbols:
             try:
-                print(f"Đang extract dữ liệu mã: {symbol}")
-                
-                
-                df = mkt.equity(symbol).ohlcv(start=start_date, end=end_date)
-                
-                if df is not None and not df.empty:
+                df = market.equity(symbol).ohlcv(
+                    start=start_date,
+                    end=end_date,
+                )
 
-                    df.columns = [col.lower() for col in df.columns]
-                    df["symbol"] = symbol
+                if df is None or df.empty:
+                    errors.append(f"{symbol}: no data returned")
+                    continue
 
-                    yield df.to_dict(orient="records")
+                df.columns = [
+                    str(column).lower()
+                    for column in df.columns
+                ]
 
-            except Exception as e:
-                print(f"Đã xảy ra lỗi khi extract {symbol}: {e}")
-                continue
+                df["symbol"] = symbol.upper()
+
+                yield df[
+                    [
+                        "time",
+                        "open",
+                        "high",
+                        "low",
+                        "close",
+                        "volume",
+                        "symbol",
+                    ]
+                ].to_dict(orient="records")
+
+            except Exception as exc:
+                errors.append(f"{symbol}: {exc}")
+
+        if errors:
+            raise RuntimeError(
+                "vnstock extraction failed:\n"
+                + "\n".join(errors)
+            )
 
     return stock_history_resource
